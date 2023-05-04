@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %} YouTube Video Summarizer {% endblock %}
+
+{% block body %}
+<h2 class="text-2xl mb-4">Enter the YouTube Video URL</h2>
+<form method="post" action="/summarize" class="flex gap-4">
+    <input class="py-2 px-4 border-2 border-blue-800 w-full" type="url" name="url" placeholder="URL" />
+    <button class="py-2 px-8 rounded-full bg-blue-800 text-white" type="submit">Submit</button>
+</form>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %} YouTube Video Summary {% endblock %}
+
+{% block body %}
+<h2 class="text-2xl mb-4">Here is the summary of the video</h2>
+<div class="bg-blue-200 p-4 rounded-md">
+    {{ summary|markdown }}
+</div>
+{% endblock %}

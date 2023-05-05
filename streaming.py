@@ -52,7 +52,7 @@ def llm_thread(g, url, article):
             temperature=0.7,
         )
         # llm(prompt)
-        prompt_template = """Write a concise summary of the following extracting the key information:
+        prompt_template = """Write a concise summary and extract main points of the following. Return in markdown format:
 
         {text}
 
@@ -64,15 +64,10 @@ def llm_thread(g, url, article):
         )
 
         refine_template = """
-            Your job is to produce a final summary\
-            We have provided an existing summary up to a certain point : {existing_answer}\n
-            We have the opportunity to refine the existing summary"
-            (only if needed) with some more context below.\n"
-            -------------\n
-            {text}\n
-            -------------\n
-            Given the new context, refine the original summary
-            If the context isn't useful, return the original summary.
+        Write the consise summary and extract the main points. Follow all the steps carefully
+        1. Remove any unncessary information.
+        2. Here is the existing summary upto certain point: "{existing_answer}" try to refine this only if needed.
+        3. Use additional context provided in quotes "{text}" and refine overall summary and return back the returnded summary with main points in markdowm format.
         """
 
         REFINE_PROMPT = PromptTemplate(
@@ -92,12 +87,15 @@ def llm_thread(g, url, article):
             chunk_overlap=100,
         )
         splitted_docs = text_splitter.split_documents(docs)
+
+        """Currently it is returning all the output responses
+        Need to find a way to return only the final output
+        """
         chain = load_summarize_chain(llm, chain_type="refine",
                                      question_prompt=PROMPT,
                                      refine_prompt=REFINE_PROMPT)
 
         chain({"input_documents": splitted_docs}, return_only_outputs=True)
-        # chain.run(splitted_docs)
     finally:
         g.close()
 
@@ -106,8 +104,3 @@ def chain(url, article = False):
     g = ThreadedGenerator()
     threading.Thread(target=llm_thread, args=(g, url, article)).start()
     return g
-
-
-
-if __name__ == '__main__':
-    app.run(threaded=True, debug=True)

@@ -1,11 +1,82 @@
-{% extends "base.html" %}
-
-{% block title %} YouTube Video Summarizer {% endblock %}
-
-{% block body %}
-<h2 class="text-2xl mb-4">Enter the YouTube Video URL</h2>
-<form method="post" action="/summarize" class="flex gap-4">
-    <input class="py-2 px-4 border-2 border-blue-800 w-full" type="url" name="url" placeholder="URL" />
-    <button class="py-2 px-8 rounded-full bg-blue-800 text-white" type="submit">Submit</button>
+{% extends "base.html" %} {% block title %} YouTube Video Summarizer {% endblock
+%} {% block body %}
+<div class="flex my-4 gap-3">
+    <div class="flex">
+        <input type="checkbox" name="article" id="article" />
+        <label for="stream">Article</label>
+    </div>
+    <div class="flex">
+        <input type="checkbox" name="stream" id="stream" />
+        <label for="stream">Streaming</label>
+    </div>
+</div>
+<h2 class="text-2xl mb-4" id="title">Enter the YouTube Video URL</h2>
+<form class="flex gap-4" id="form">
+  <input
+    class="py-2 px-4 border-2 border-blue-800 w-full"
+    type="url"
+    name="url"
+    placeholder="URL"
+  />
+  <button class="py-2 px-8 rounded-full bg-blue-800 text-white" type="submit">
+    Submit
+  </button>
 </form>
+<div class="mt-8 bg-blue-400 p-4 rounded-md" id="output"></div>
+<script>
+  const outputEl = document.getElementById("output");
+  const articleCheckbox = document.getElementById("article");
+  const streamCheckbox = document.getElementById("stream");
+  const form = document.getElementById("form")
+
+  let stream = false;
+  let article = false;
+
+  streamCheckbox.addEventListener('change', (e) => {
+    stream = e.target.checked
+  })
+
+  articleCheckbox.addEventListener('change', (e) => {
+    article = e.target.checked
+  })
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (stream) {
+        getSummaryStream()
+    } else {
+        alert("Please select Strem")
+    }
+  })
+
+  async function getSummaryStream () {
+    const _formData = new FormData(form)
+    const formData = new FormData()
+
+    formData.append('url', _formData.get('url'));
+    formData.append('is_article', article);
+
+    outputEl.innerHTML = 'Loading...'
+    try {
+      const response = await fetch("/summarize/stream", {
+        method: "POST",
+        body: formData,
+      });
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      outputEl.innerHTML = ''
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          break;
+        }
+        const decoded = decoder.decode(value, { stream: true });
+        outputEl.innerText += decoded;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+</script>
 {% endblock %}

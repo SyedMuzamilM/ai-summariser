@@ -1,0 +1,11 @@
+.container {
+  position: fixed;
+  top: 50%;
+  right: -3%;
+  transform: translateY(-50%);
+  rotate: -90deg;
+}
+
+.container .btn {
+  inset: 0;
+}

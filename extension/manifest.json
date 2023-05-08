@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "AI Summarizer",
+  "description": "AI Summarizer for YouTube videos and Articles",
+  "version": "0.0.1",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "ai-summarizer.png"
+  },
+  "content_scripts": [
+    {
+      "js": ["scripts/content.js"],
+      "matches": ["https://developer.chrome.com/*", "https://youtube.com/*"]
+    }
+  ]
+}
